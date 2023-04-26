@@ -1,10 +1,9 @@
 mkdir -p outdir/
 cd ./src/GAMMA
 python main.py \
-	--model vgg16 \
-	--epochs 10 \
-	--fitness1 latency \
-	--fitness2 power \
+	--model resnet50 \
+	--fitness1 area \
+	--fitness2 energy \
 	--num_pop 100 \
 	--epochs 50 \
 	--num_pe -1 \

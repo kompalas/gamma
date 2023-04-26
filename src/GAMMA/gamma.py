@@ -903,7 +903,7 @@ class GAMMA(object):
                    "--num_simd_lanes=1", "--l1_size_cstr={}".format(self.l1_size if not l1_size else l1_size),
                    "--l2_size_cstr={}".format(self.l2_size if not l2_size else l2_size), "--print_res=false", "--print_res_csv_file=true", "--print_log_file=false", "--print_design_space=false", "--msg_print_lv=0"]
 
-        print(' '.join(command))
+        #print(' '.join(command))
 
         process = Popen(command, stdout=PIPE, stderr=PIPE)
         stdout, stderr = process.communicate()

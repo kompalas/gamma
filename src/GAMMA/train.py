@@ -64,7 +64,7 @@ def train_model(model_defs, input_arg, map_cstr=None, chkpt_file='./chkpt'):
                       l2_size=opt.l2_size, NocBW=opt.NocBW, offchipBW=opt.offchipBW, slevel_min=opt.slevel_min, slevel_max=opt.slevel_max,
                       fixedCluster=opt.fixedCluster, log_level=opt.log_level, map_cstr=map_cstr)
     constraints = {"area":opt.area_budget* 1e6}
-    for dimension in model_defs:
+    for layer_idx, dimension in enumerate(model_defs):
         env.reset_dimension(fitness=fitness, constraints=constraints, dimension=dimension)
         env.reset_hw_parm(num_pe=opt.num_pe, l1_size=opt.l1_size, l2_size=opt.l2_size, pe_limit=opt.pe_limit,area_pebuf_only=False, external_area_model=True)
         chkpt, pops = env.run(dimension, stage_idx=0, num_population=opt.num_pop, prev_stage_value=None,
@@ -76,22 +76,26 @@ def train_model(model_defs, input_arg, map_cstr=None, chkpt_file='./chkpt'):
         print(f"Reward: {chkpt['best_reward'][0]:.3e}, Runtime: {best_runtime:.0f}(cycles), Area: {best_area/1e6:.3f}(mm2), PE Area_ratio: {best_num_pe*MAC_AREA_INT8/best_area*100:.1f}%, Num_PE: {best_num_pe:.0f}, L1 Buffer: {best_l1_size:.0f}(elements), L2 Buffer: {best_l2_size:.0f}(elements)")
         chkpt = {
             "reward":chkpt['best_reward'][0],
-            "best_sol":best_sol,
             "runtime":best_runtime,
             "area":best_area,
+            "throughput": best_throughput,
+            "power": best_power,
+            "energy": best_energy,
             "pe_area_ratio":best_num_pe*MAC_AREA_INT8/best_area,
             "PE":best_num_pe,
             "PE_area": best_num_pe * MAC_AREA_INT8,
             "L1_area": best_l1_size * best_num_pe * BUF_AREA_perbit * 8,
             "L2_area": best_l2_size * BUF_AREA_perbit * 8,
             "L1_size": best_l1_size,
-            "L2_size": best_l2_size
+            "L2_size": best_l2_size,
+            "best_sol":best_sol,
         }
-        columns = ["runtime", "area", "pe_area_ratio", "PE", "L1_size", "L2_size", "PE_area", "L1_area", "L2_area","best_sol"]
+        columns = list(chkpt.keys())
         np_array = np.array([chkpt[t] for t in columns[:-1]] + [f'{chkpt["best_sol"]}']).reshape(1, -1)
         df = pd.DataFrame(np_array, columns=columns)
-        df.to_csv(chkpt_file[:-4]+".csv")
-        with open(chkpt_file, "wb") as fd:
+
+        df.to_csv(chkpt_file[:-4] + f"_layer{layer_idx}.csv")
+        with open(chkpt_file.replace('.plt', f'_layer{layer_idx}.plt'), "wb") as fd:
             pickle.dump(chkpt, fd)
 
 def get_cstr_name(mapping_cstr):
