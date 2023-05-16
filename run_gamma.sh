@@ -8,14 +8,14 @@ cd ./src/GAMMA
 python main.py \
 	--model $model \
 	--fitness1 energy \
-	--fitness2 latency \
+	--fitness2 area \
 	--num_pop 100 \
 	--epochs 200 \
 	--num_pe -1 \
 	--l1_size -1 \
 	--l2_size -1 \
 	--pe_limit 100000 \
-	--area_budget 7 \
+	--area_budget 1 \
 	--log_level 2 \
 	2>&1 | tee ../../outdir/${model}.log
 	#--NocBW 81920000 \
