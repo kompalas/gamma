@@ -1,4 +1,6 @@
 #!/bin/bash
+# NOTE: Area budget is in mm^2. So argument is multiplied with 1e+6
+
 model="${1?}"
 
 mkdir -p outdir/
@@ -13,9 +15,9 @@ python main.py \
 	--l1_size -1 \
 	--l2_size -1 \
 	--pe_limit 100000 \
-	--area_budget 1000000 \
+	--area_budget 7 \
 	--log_level 2 \
-	2>&1 | tee ../../outdir/last_run.log
+	2>&1 | tee ../../outdir/${model}.log
 	#--NocBW 81920000 \
 	#--offchipBW 1073741824 \
 cd ../../
